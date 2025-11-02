@@ -1,6 +1,4 @@
 <!doctype html>
-<!-- (Truncated for brevity; same as above HTML content) -->
-<html><!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -13,7 +11,7 @@
       --bg:#0f1724;
       --card:#0b1220;
       --muted:#94a3b8;
-      --accent:#1e40af; /* deep blue */
+      --accent:#1e40af;
       --accent-2:#2563eb;
       --glass: rgba(255,255,255,0.03);
       --glass-2: rgba(255,255,255,0.02);
@@ -40,7 +38,6 @@
     .main-grid{display:grid; grid-template-columns: 1fr 380px; gap:22px; margin-top:28px;}
     .card{background:var(--card); padding:18px; border-radius:12px; box-shadow: 0 6px 20px rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.02);}
     .card h3{margin:0 0 10px 0; font-size:16px;}
-    /* Skills bars */
     .skills-list{display:flex; flex-direction:column; gap:10px;}
     .skill{display:flex; align-items:center; gap:12px;}
     .skill .name{width:130px; color:var(--muted); font-size:14px;}
@@ -54,21 +51,11 @@
     .p-desc{color:var(--muted); margin:6px 0 0 0; font-size:13px;}
     .meta{margin-top:12px; color:var(--muted); font-size:13px;}
     footer{margin-top:26px; text-align:center; color:var(--muted); font-size:13px;}
-    /* watermarked GITHUB text */
-    .watermark{
-      position:absolute; right:36px; top:12px; font-weight:700; font-size:120px; color:rgba(255,255,255,0.02); transform:rotate(-12deg); pointer-events:none; user-select:none;
-    }
-    /* responsive */
-    @media (max-width:980px){
-      .main-grid{grid-template-columns:1fr; }
-      .watermark{display:none;}
-    }
-    /* small link list */
+    .watermark{ position:absolute; right:36px; top:12px; font-weight:700; font-size:120px; color:rgba(255,255,255,0.02); transform:rotate(-12deg); pointer-events:none; user-select:none; }
+    @media (max-width:980px){ .main-grid{grid-template-columns:1fr;} .watermark{display:none;} }
     .contact-list{display:flex; flex-direction:column; gap:8px; margin-top:10px;}
     .contact-list a{color:var(--muted); font-size:14px; text-decoration:none;}
-    /* project loader */
     .loader{color:var(--muted); font-size:14px;}
-    /* project tags */
     .tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;}
     .tag{background:rgba(255,255,255,0.03); color:var(--muted); padding:6px 8px; font-size:12px; border-radius:6px;}
   </style>
@@ -93,7 +80,6 @@
     </header>
 
     <div class="main-grid">
-      <!-- left column -->
       <section class="card" id="projectsCard">
         <h3>Project Portfolio</h3>
         <div id="projectsContainer">
@@ -102,25 +88,19 @@
         <div class="meta">Source: <a href="https://github.com/desai-vikrant/Projects-Portfolio" target="_blank" style="color:var(--accent-2); text-decoration:none;">github.com/desai-vikrant/Projects-Portfolio</a></div>
       </section>
 
-      <!-- right column -->
       <aside>
         <div class="card">
           <h3>Skills & Tools</h3>
-          <div class="skills-list" id="skills">
-            <!-- skill bars inserted by JS -->
-          </div>
+          <div class="skills-list" id="skills"></div>
 
           <div style="height:12px"></div>
           <div style="width:100%; height:180px; margin-top:8px;">
-            <!-- simple inline SVG chart as example -->
             <svg viewBox="0 0 400 180" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="border-radius:8px; background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));">
               <defs>
                 <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#3b82f6"/></linearGradient>
               </defs>
-              <!-- axes -->
               <g transform="translate(36,16)" fill="none" font-family="sans-serif" font-size="10">
                 <text x="0" y="-6" fill="#cbd5e1">Skill overview</text>
-                <!-- bars -->
                 <rect x="0" y="10" width="280" height="12" fill="#0b1220" rx="6" />
                 <rect x="0" y="10" width="220" height="12" fill="url(#g1)" rx="6" />
                 <text x="290" y="20" fill="#cbd5e1">Python — 88%</text>
@@ -171,7 +151,6 @@
   </div>
 
   <script>
-    // Skill data (can be edited)
     const skills = [
       {name:'Python', value:88},
       {name:'Machine Learning', value:60},
@@ -182,19 +161,15 @@
       {name:'Data Visualization', value:62}
     ];
 
-    // Render skill bars
     const skillsContainer = document.getElementById('skills');
     skills.forEach(s=>{
       const el = document.createElement('div');
       el.className = 'skill';
       el.innerHTML = '<div class="name">'+s.name+'</div><div class="bar"><div class="fill" style="width:0%"></div></div><div style="width:44px;text-align:right;color:var(--muted);font-size:13px">'+s.value+'%</div>';
       skillsContainer.appendChild(el);
-      // animate
       setTimeout(()=>{ el.querySelector('.fill').style.width = s.value+'%'; }, 300);
     });
 
-    // Fetch projects from GitHub repo contents
-    // We will use the GitHub API to list items under Projects-Portfolio repository.
     const owner = 'desai-vikrant';
     const repo = 'Projects-Portfolio';
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents`;
@@ -206,22 +181,18 @@
         const res = await fetch(apiUrl);
         if(!res.ok) throw new Error('Failed to fetch repo contents');
         const items = await res.json();
-        // Filter directories (common pattern for project folders) or markdown files
         const projectItems = items.filter(i => i.type === 'dir' || (i.type==='file' && (i.name.toLowerCase().includes('project') || i.name.toLowerCase().endsWith('.md'))));
-        // If nothing found, fallback to listing top-level files
         const list = (projectItems.length>0) ? projectItems : items.slice(0, 8);
 
         const projectsList = document.createElement('div');
         projectsList.className = 'projects-list';
 
-        // For each item, try to fetch a README.md inside the directory for description
         for(const item of list){
           const projectEl = document.createElement('div');
           projectEl.className = 'project';
           const name = item.name;
           const githubPath = `https://github.com/${owner}/${repo}${ item.type === 'dir' ? '/tree/main/' + encodeURIComponent(item.name) : '/blob/main/' + encodeURIComponent(item.name) }`;
 
-          // Thumbnail text
           const thumb = document.createElement('div');
           thumb.className = 'p-thumbnail';
           thumb.textContent = name.slice(0,3).toUpperCase();
@@ -246,21 +217,17 @@
           info.appendChild(title);
           info.appendChild(desc);
 
-          // Attempt to fetch README.md inside directory to get first line as description
           if(item.type === 'dir'){
             try {
               const readRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(item.name)}/README.md`);
               if(readRes.ok){
                 const readJson = await readRes.json();
-                // content is base64
                 const content = atob(readJson.content.replace(/\n/g,''));
-                // take first meaningful line
                 const firstLine = content.split('\n').find(l => l.trim().length>0);
                 if(firstLine) desc.textContent = firstLine.replace(/^#\s*/,'').slice(0,200);
               }
             } catch(e){}
           } else {
-            // item is file, if it's README.md or .md, fetch it
             if(item.name.toLowerCase().endsWith('.md')){
               try {
                 const readRes = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/main/${encodeURIComponent(item.name)}`);
@@ -273,7 +240,6 @@
             }
           }
 
-          // tags: indicate file/folder and link
           const tags = document.createElement('div');
           tags.className = 'tags';
           const tagType = document.createElement('div'); tagType.className='tag'; tagType.textContent = item.type === 'dir' ? 'folder' : 'file';
@@ -294,11 +260,7 @@
       }
     }
 
-    // load on page open
     loadProjects();
-
-    // Optional: refresh button or periodic refresh could be added
   </script>
 </body>
-</html>
 </html>
